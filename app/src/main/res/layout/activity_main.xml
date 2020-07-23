@@ -24,7 +24,6 @@
         android:layout_marginBottom="8dp"
         android:src="@drawable/ic_add_for_fab"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

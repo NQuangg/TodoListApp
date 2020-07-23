@@ -1,20 +1,16 @@
-package com.example.myapplication;
+package com.example.todolist;
 
-import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Build;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
@@ -42,10 +38,6 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
     public void onBindViewHolder(final WordViewHolder holder, final int position) {
         String mCurrent = mWordList.get(position);
         holder.wordItemView.setText(mCurrent);
-
-
-
-
     }
 
     @Override
@@ -86,6 +78,9 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
             editButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if (wordItemView.isChecked()) {
+                        return;
+                    }
                     final Dialog dialog = new Dialog(view.getContext());
                     dialog.setContentView(R.layout.dialog_add);
                     Button submitButton = dialog.findViewById(R.id.submit_button);
@@ -119,6 +114,9 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if (wordItemView.isChecked()) {
+                        return;
+                    }
                     int mPosition = getLayoutPosition();
                     mWordList.remove(mPosition);
                     notifyItemRemoved(mPosition);

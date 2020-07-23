@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.todolist;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
