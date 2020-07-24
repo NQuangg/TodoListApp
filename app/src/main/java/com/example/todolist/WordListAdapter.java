@@ -19,31 +19,42 @@ import java.util.LinkedList;
 
 public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordViewHolder> {
     private final LinkedList<String> mWordList;
+    private final LinkedList<Boolean> stateList;
     private LayoutInflater mInflater;
 
-    public WordListAdapter(Context context,
-                           LinkedList<String> wordList) {
+    public WordListAdapter(Context context, LinkedList<String> wordList, LinkedList<Boolean> stateList) {
         mInflater = LayoutInflater.from(context);
         this.mWordList = wordList;
+        this.stateList = stateList;
     }
 
     @Override
-    public WordViewHolder onCreateViewHolder(ViewGroup parent,
-                                             int viewType) {
+    public WordViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View mItemView = mInflater.inflate(R.layout.wordlist_item, parent, false);
         return new WordViewHolder(mItemView, this);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(final WordViewHolder holder, final int position) {
         String mCurrent = mWordList.get(position);
         holder.wordItemView.setText(mCurrent);
+        holder.wordItemView.setChecked(stateList.get(position));
+
+        if (holder.wordItemView.isChecked()) {
+            holder.wordItemView.setText(Html.fromHtml("<del><span style='color:#808080'>"+mCurrent+"</span></del>", 0));
+        } else {
+            holder.wordItemView.setText(mCurrent);
+        }
+        stateList.set(position, holder.wordItemView.isChecked());
     }
 
     @Override
     public int getItemCount() {
         return mWordList.size();
     }
+
+
 
     public class WordViewHolder extends RecyclerView.ViewHolder {
         public final CheckBox wordItemView;
@@ -70,6 +81,7 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
                     } else {
                         wordItemView.setText(element);
                     }
+                    stateList.set(mPosition, wordItemView.isChecked());
                 }
 
             });
@@ -81,6 +93,7 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
                     if (wordItemView.isChecked()) {
                         return;
                     }
+
                     final Dialog dialog = new Dialog(view.getContext());
                     dialog.setContentView(R.layout.dialog_add);
                     Button submitButton = dialog.findViewById(R.id.submit_button);
@@ -109,8 +122,6 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
                 }
             });
 
-
-
             deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -124,7 +135,7 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
                 }
             });
         }
-
     }
+
 
 }

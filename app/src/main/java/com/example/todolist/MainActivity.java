@@ -6,16 +6,33 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 
 public class MainActivity extends AppCompatActivity {
     private final LinkedList<String> mWordList = new LinkedList<>();
+    private final LinkedList<Boolean> stateList = new LinkedList<>();
     private RecyclerView mRecyclerView;
     private WordListAdapter mAdapter;
 
@@ -38,10 +55,16 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         EditText taskName = dialog.findViewById(R.id.task_name);
-                        mWordList.addLast(taskName.getText().toString());
-                        mRecyclerView.getAdapter().notifyItemInserted(wordListSize);
-                        mRecyclerView.smoothScrollToPosition(wordListSize);
-                        dialog.dismiss();
+                        String task = taskName.getText().toString().trim().replaceAll("\\s+", " ");
+                        if (task.equals("")) {
+                            Toast.makeText(view.getContext(), "task is empty", Toast.LENGTH_SHORT).show();
+                        } else {
+                            mWordList.addLast(task);
+                            stateList.addLast(false);
+                            mRecyclerView.getAdapter().notifyItemInserted(wordListSize);
+                            mRecyclerView.smoothScrollToPosition(wordListSize);
+                            dialog.dismiss();
+                        }
                     }
                 });
 
@@ -57,9 +80,81 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mRecyclerView = findViewById(R.id.recyclerview);
-        mAdapter = new WordListAdapter(this, mWordList);
+        mAdapter = new WordListAdapter(this, mWordList, stateList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        try {
+            readJSONDataFromFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        try {
+            writeJSONDataFromFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void writeJSONDataFromFile() throws IOException{
+        JSONArray jsonArray = new JSONArray();
+        for (int i = 0; i < mWordList.size(); i++) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("taskName", mWordList.get(i));
+            jsonObject.put("isChecked", stateList.get(i));
+            jsonArray.add(jsonObject);
+        }
+
+        FileOutputStream fos = null;
+        try {
+            fos = openFileOutput("taskList.json", MODE_PRIVATE);
+            String str = jsonArray.toJSONString();
+            fos.write(str.getBytes());
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void readJSONDataFromFile() throws IOException{
+        FileInputStream fis = null;
+        try {
+            fis = openFileInput("taskList.json");
+            BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+            StringBuffer data = new StringBuffer();
+            String line = "";
+            while ((line = br.readLine()) != null) {
+                data.append(line).append("\n");
+            }
+            JSONParser parser = new JSONParser();
+            try {
+                JSONArray jsonArray = (JSONArray) parser.parse(String.valueOf(data));
+
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+                    String taskName = (String) jsonObject.get("taskName");
+                    Boolean check = (Boolean) jsonObject.get("isChecked");
+                    mWordList.add(taskName);
+                    stateList.add(check);
+                }
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
 
 }
