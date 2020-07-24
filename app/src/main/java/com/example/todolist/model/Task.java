@@ -16,17 +16,4 @@ public class Task {
     public boolean isChecked() {
         return isChecked;
     }
-
-    public void setTaskName(String taskName) {
-        this.taskName = taskName;
-    }
-
-    public void setChecked(boolean checked) {
-        isChecked = checked;
-    }
-
-    public void assignTask(Task task) {
-        taskName = task.getTaskName();
-        isChecked = task.isChecked();
-    }
 }

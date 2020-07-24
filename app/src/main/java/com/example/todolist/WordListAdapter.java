@@ -15,17 +15,18 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.todolist.model.Task;
+
 import java.util.LinkedList;
 
 public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordViewHolder> {
-    private final LinkedList<String> mWordList;
-    private final LinkedList<Boolean> stateList;
+    private final LinkedList<Task> taskList;
     private LayoutInflater mInflater;
 
-    public WordListAdapter(Context context, LinkedList<String> wordList, LinkedList<Boolean> stateList) {
+    public WordListAdapter(Context context, LinkedList<Task> taskList) {
         mInflater = LayoutInflater.from(context);
-        this.mWordList = wordList;
-        this.stateList = stateList;
+        this.taskList = taskList;
     }
 
     @Override
@@ -37,21 +38,22 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(final WordViewHolder holder, final int position) {
-        String mCurrent = mWordList.get(position);
-        holder.wordItemView.setText(mCurrent);
-        holder.wordItemView.setChecked(stateList.get(position));
+        String mText = taskList.get(position).getTaskName();
+        Boolean mCheck = taskList.get(position).isChecked();
+        holder.wordItemView.setText(mText);
+        holder.wordItemView.setChecked(mCheck);
 
         if (holder.wordItemView.isChecked()) {
-            holder.wordItemView.setText(Html.fromHtml("<del><span style='color:#808080'>"+mCurrent+"</span></del>", 0));
+            holder.wordItemView.setText(Html.fromHtml("<del><span style='color:#808080'>"+mText+"</span></del>", 0));
         } else {
-            holder.wordItemView.setText(mCurrent);
+            holder.wordItemView.setText(mText);
         }
-        stateList.set(position, holder.wordItemView.isChecked());
+        taskList.set(position, new Task(mText, mCheck));
     }
 
     @Override
     public int getItemCount() {
-        return mWordList.size();
+        return taskList.size();
     }
 
 
@@ -75,13 +77,13 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
                 @Override
                 public void onClick(View view) {
                     int mPosition = getLayoutPosition();
-                    String element = mWordList.get(mPosition);
+                    String element = taskList.get(mPosition).getTaskName();
                     if (wordItemView.isChecked()) {
                         wordItemView.setText(Html.fromHtml("<del><span style='color:#808080'>"+element+"</span></del>", 0));
                     } else {
                         wordItemView.setText(element);
                     }
-                    stateList.set(mPosition, wordItemView.isChecked());
+                    taskList.set(mPosition, new Task(element, wordItemView.isChecked()));
                 }
 
             });
@@ -91,6 +93,7 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
                 @Override
                 public void onClick(View view) {
                     if (wordItemView.isChecked()) {
+                        Toast.makeText(view.getContext(), "Can't edit task completed", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -105,7 +108,7 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
                             int mPosition = getLayoutPosition();
                             EditText taskName = dialog.findViewById(R.id.task_name);
                             wordItemView.setText(taskName.getText().toString());
-                            mWordList.set(mPosition, taskName.getText().toString());
+                            taskList.set(mPosition, new Task(taskName.getText().toString(), wordItemView.isChecked()));
                             dialog.dismiss();
                         }
                     });
@@ -126,12 +129,13 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
                 @Override
                 public void onClick(View view) {
                     if (wordItemView.isChecked()) {
+                        Toast.makeText(view.getContext(), "Can't delete task completed", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     int mPosition = getLayoutPosition();
-                    mWordList.remove(mPosition);
+                    taskList.remove(mPosition);
                     notifyItemRemoved(mPosition);
-                    Toast.makeText(view.getContext(), "delete successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(view.getContext(), "Delete successfully", Toast.LENGTH_SHORT).show();
                 }
             });
         }

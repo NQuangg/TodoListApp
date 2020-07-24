@@ -6,12 +6,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.todolist.model.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.simple.JSONArray;
@@ -22,17 +22,14 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 
 public class MainActivity extends AppCompatActivity {
-    private final LinkedList<String> mWordList = new LinkedList<>();
-    private final LinkedList<Boolean> stateList = new LinkedList<>();
+
+    private final LinkedList<Task> taskList = new LinkedList<Task>();
+
     private RecyclerView mRecyclerView;
     private WordListAdapter mAdapter;
 
@@ -45,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final int wordListSize = mWordList.size();
+                final int taskListSize = taskList.size();
                 final Dialog dialog = new Dialog(MainActivity.this);
                 dialog.setContentView(R.layout.dialog_add);
                 Button submitButton = dialog.findViewById(R.id.submit_button);
@@ -57,12 +54,11 @@ public class MainActivity extends AppCompatActivity {
                         EditText taskName = dialog.findViewById(R.id.task_name);
                         String task = taskName.getText().toString().trim().replaceAll("\\s+", " ");
                         if (task.equals("")) {
-                            Toast.makeText(view.getContext(), "task is empty", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(view.getContext(), "Task is empty", Toast.LENGTH_SHORT).show();
                         } else {
-                            mWordList.addLast(task);
-                            stateList.addLast(false);
-                            mRecyclerView.getAdapter().notifyItemInserted(wordListSize);
-                            mRecyclerView.smoothScrollToPosition(wordListSize);
+                            taskList.addLast(new Task(task, false));
+                            mRecyclerView.getAdapter().notifyItemInserted(taskListSize);
+                            mRecyclerView.smoothScrollToPosition(taskListSize);
                             dialog.dismiss();
                         }
                     }
@@ -80,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mRecyclerView = findViewById(R.id.recyclerview);
-        mAdapter = new WordListAdapter(this, mWordList, stateList);
+        mAdapter = new WordListAdapter(this, taskList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -103,10 +99,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void writeJSONDataFromFile() throws IOException{
         JSONArray jsonArray = new JSONArray();
-        for (int i = 0; i < mWordList.size(); i++) {
+        for (int i = 0; i < taskList.size(); i++) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("taskName", mWordList.get(i));
-            jsonObject.put("isChecked", stateList.get(i));
+            jsonObject.put("taskName", taskList.get(i).getTaskName());
+            jsonObject.put("isChecked", taskList.get(i).isChecked());
             jsonArray.add(jsonObject);
         }
 
@@ -141,8 +137,7 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject jsonObject = (JSONObject) jsonArray.get(i);
                     String taskName = (String) jsonObject.get("taskName");
                     Boolean check = (Boolean) jsonObject.get("isChecked");
-                    mWordList.add(taskName);
-                    stateList.add(check);
+                    taskList.addLast(new Task(taskName, check));
                 }
             } catch(Exception e) {
                 e.printStackTrace();
@@ -154,7 +149,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
-
 
 }
