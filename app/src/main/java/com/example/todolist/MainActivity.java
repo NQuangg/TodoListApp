@@ -24,12 +24,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-
-    private final LinkedList<Task> taskList = new LinkedList<Task>();
-
+    private final ArrayList<Task> taskList = new ArrayList<Task>();
     private RecyclerView mRecyclerView;
     private WordListAdapter mAdapter;
 
@@ -56,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                         if (task.equals("")) {
                             Toast.makeText(view.getContext(), "Task is empty", Toast.LENGTH_SHORT).show();
                         } else {
-                            taskList.addLast(new Task(task, false));
+                            taskList.add(new Task(task, false));
                             mRecyclerView.getAdapter().notifyItemInserted(taskListSize);
                             mRecyclerView.smoothScrollToPosition(taskListSize);
                             dialog.dismiss();
@@ -137,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject jsonObject = (JSONObject) jsonArray.get(i);
                     String taskName = (String) jsonObject.get("taskName");
                     Boolean check = (Boolean) jsonObject.get("isChecked");
-                    taskList.addLast(new Task(taskName, check));
+                    taskList.add(new Task(taskName, check));
                 }
             } catch(Exception e) {
                 e.printStackTrace();

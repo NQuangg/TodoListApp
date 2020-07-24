@@ -18,13 +18,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todolist.model.Task;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordViewHolder> {
-    private final LinkedList<Task> taskList;
+    private final ArrayList<Task> taskList;
     private LayoutInflater mInflater;
 
-    public WordListAdapter(Context context, LinkedList<Task> taskList) {
+    public WordListAdapter(Context context, ArrayList<Task> taskList) {
         mInflater = LayoutInflater.from(context);
         this.taskList = taskList;
     }
