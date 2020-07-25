@@ -7,16 +7,18 @@
 
     <Button
         android:id="@+id/submit_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="180dp"
+        android:layout_height="50dp"
         android:text="@string/submit"
         app:layout_constraintBaseline_toBaselineOf="@+id/cancel_button"
+        app:layout_constraintEnd_toEndOf="@+id/task_name"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/cancel_button" />
 
     <Button
         android:id="@+id/cancel_button"
-        android:layout_width="93dp"
-        android:layout_height="46dp"
+        android:layout_width="180dp"
+        android:layout_height="50dp"
         android:text="@string/cancel"
         app:layout_constraintStart_toStartOf="@+id/task_name"
         app:layout_constraintTop_toBottomOf="@+id/task_name" />
