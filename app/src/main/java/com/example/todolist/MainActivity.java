@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
                             mRecyclerView.getAdapter().notifyItemInserted(taskListSize);
                             mRecyclerView.smoothScrollToPosition(taskListSize);
                             dialog.dismiss();
+                            Toast.makeText(view.getContext(), "Add successful", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -137,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
                     Boolean check = (Boolean) jsonObject.get("isChecked");
                     taskList.add(new Task(taskName, check));
                 }
+                fis.close();
             } catch(Exception e) {
                 e.printStackTrace();
             }
