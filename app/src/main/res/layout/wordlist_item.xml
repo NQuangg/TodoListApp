@@ -4,18 +4,21 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="6dp">
+    android:padding="6dp"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        >
 
         <CheckBox
             android:id="@+id/word"
             style="@style/word_title"
             android:layout_width="242dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            />
 
         <ImageView
             android:id="@+id/edit_button"
@@ -34,6 +37,7 @@
             android:contentDescription="@string/delete_button"
             android:src="@drawable/ic_delete"
             />
+
     </LinearLayout>
 
 </LinearLayout>
