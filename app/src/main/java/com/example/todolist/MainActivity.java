@@ -13,10 +13,8 @@ import android.widget.Toast;
 
 import com.example.todolist.model.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -80,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         try {
-            readJSONDataFromFile();
+            readInternalFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -90,26 +88,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause(){
         super.onPause();
         try {
-            writeJSONDataFromFile();
+            writeInternalFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void writeJSONDataFromFile() throws IOException{
-        JSONArray jsonArray = new JSONArray();
-        for (int i = 0; i < taskList.size(); i++) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("taskName", taskList.get(i).getTaskName());
-            jsonObject.put("isChecked", taskList.get(i).isChecked());
-            jsonArray.add(jsonObject);
-        }
+    public void writeInternalFile() throws IOException{
+        String fileContents = new Gson().toJson(taskList);
 
         FileOutputStream fos = null;
         try {
             fos = openFileOutput("taskList.json", MODE_PRIVATE);
-            String str = jsonArray.toJSONString();
-            fos.write(str.getBytes());
+            fos.write(fileContents.getBytes());
             fos.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -118,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void readJSONDataFromFile() throws IOException{
+    public void readInternalFile() throws IOException{
         FileInputStream fis = null;
         try {
             fis = openFileInput("taskList.json");
@@ -128,19 +119,13 @@ public class MainActivity extends AppCompatActivity {
             while ((line = br.readLine()) != null) {
                 data.append(line).append("\n");
             }
-            JSONParser parser = new JSONParser();
-            try {
-                JSONArray jsonArray = (JSONArray) parser.parse(String.valueOf(data));
+            fis.close();
 
-                for (int i = 0; i < jsonArray.size(); i++) {
-                    JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-                    String taskName = (String) jsonObject.get("taskName");
-                    Boolean check = (Boolean) jsonObject.get("isChecked");
-                    taskList.add(new Task(taskName, check));
-                }
-                fis.close();
-            } catch(Exception e) {
-                e.printStackTrace();
+            String fileContents = data.toString();
+            ArrayList<Task> tasks =  new Gson().fromJson(fileContents.trim(), new TypeToken<ArrayList<Task>>(){}.getType());
+
+            for (Task task: tasks) {
+                taskList.add(task);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -149,5 +134,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
 
 }
