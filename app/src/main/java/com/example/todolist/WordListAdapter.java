@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,8 +30,9 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
         this.taskList = taskList;
     }
 
+    @NonNull
     @Override
-    public WordViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public WordViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View mItemView = mInflater.inflate(R.layout.wordlist_item, parent, false);
         return new WordViewHolder(mItemView, this);
     }
@@ -39,7 +41,7 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
     @Override
     public void onBindViewHolder(final WordViewHolder holder, final int position) {
         String mText = taskList.get(position).getTaskName();
-        Boolean mCheck = taskList.get(position).isChecked();
+        boolean mCheck = taskList.get(position).isChecked();
         holder.wordItemView.setText(mText);
         holder.wordItemView.setChecked(mCheck);
 
@@ -55,8 +57,6 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
     public int getItemCount() {
         return taskList.size();
     }
-
-
 
     public class WordViewHolder extends RecyclerView.ViewHolder {
         public final CheckBox wordItemView;

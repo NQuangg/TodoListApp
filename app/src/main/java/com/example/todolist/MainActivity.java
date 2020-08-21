@@ -27,7 +27,6 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
     private final ArrayList<Task> taskList = new ArrayList<Task>();
     private RecyclerView mRecyclerView;
-    private WordListAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
                 dialog.setContentView(R.layout.dialog_add);
                 Button submitButton = dialog.findViewById(R.id.submit_button);
                 Button cancelButton = dialog.findViewById(R.id.cancel_button);
-
+                
                 submitButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -73,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mRecyclerView = findViewById(R.id.recyclerview);
-        mAdapter = new WordListAdapter(this, taskList);
+        WordListAdapter mAdapter = new WordListAdapter(this, taskList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -114,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             fis = openFileInput("taskList.json");
             BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-            StringBuffer data = new StringBuffer();
+            StringBuilder data = new StringBuilder();
             String line = "";
             while ((line = br.readLine()) != null) {
                 data.append(line).append("\n");
@@ -124,9 +123,7 @@ public class MainActivity extends AppCompatActivity {
             String fileContents = data.toString();
             ArrayList<Task> tasks =  new Gson().fromJson(fileContents.trim(), new TypeToken<ArrayList<Task>>(){}.getType());
 
-            for (Task task: tasks) {
-                taskList.add(task);
-            }
+            taskList.addAll(tasks);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
